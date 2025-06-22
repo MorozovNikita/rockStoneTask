@@ -1,0 +1,46 @@
+--- Client.cpp	2025-06-22 16:54:36.672335200 +0300
++++ NEW.cpp	2025-06-22 16:53:39.050951300 +0300
+@@ -20,6 +20,7 @@
+ void Client::disconnect() const
+ {
+ 	this->io->stop();
++	logger->info("Client {} disconnected", this->player->id);
+ }
+ 
+ void Client::send(const server::Packet &packet) const
+@@ -65,6 +66,12 @@
+ 	if (params.empty())
+ 		return;
+ 
++	if (!player)
++	{
++		logger->debug("The player field is not initialized in Client::params_set");
++		return;
++	}
++
+ 	this->player->params->set(params);
+ 
+ 	logger->info("Client {} params set", this->player->id);
+@@ -74,6 +81,12 @@
+ {
+ 	uint32_t item_id = packet.I(0);
+ 
++	if (!player)
++	{
++		logger->debug("The player field is not initialized in Client::buy");
++		return;
++	}
++
+ 	if (!this->player->balance->can_afford(item_id))
+ 	{
+ 		logger->warning("Client {} can't afford item {}", this->player->id, item_id);
+@@ -110,7 +123,8 @@
+ 	data.net_id = net_id;
+ 	data.net_type = net_type;
+ 
+-	this->requests->add(&data, [&](const vector<Player*> &loaded) -> void
++	
++	this->requests->add(&data, [this, &data](const vector<Player*> &loaded) -> void
+ 	{
+ 		this->login_do(loaded[0], &data);
+ 	});
