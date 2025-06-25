@@ -1,0 +1,9 @@
+SELECT 
+    device
+FROM 
+    players
+GROUP BY 
+    device
+ORDER BY 
+    COUNT(device) DESC
+LIMIT 5;

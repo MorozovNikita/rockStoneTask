@@ -1,0 +1,13 @@
+SELECT 
+    AVG(daily_logins) as avg_logins_per_day
+FROM (
+     SELECT 
+         DATE(login_time) as login_date,
+         COUNT(*) as daily_logins
+     FROM 
+         players
+     WHERE 
+         login_time >= NOW() - INTERVAL 7 DAY
+     GROUP BY 
+         login_date
+     ) as daily_logins_subquery;
